@@ -21,7 +21,7 @@ AC_ARG_WITH([openssl],
 	[],
 	[with_openssl=check])
 
-
+AM_CONDITIONAL([HAVE_GNUTLS], [false])
 AS_IF([test "x$with_gnutls" != xno],
 	[PKG_CHECK_MODULES([GNUTLS], [gnutls >= 3.6.0],
 	[AM_CONDITIONAL([HAVE_GNUTLS], [true])]
@@ -29,16 +29,17 @@ AS_IF([test "x$with_gnutls" != xno],
 	[HAVE_CRYPTO=true],
 	AS_IF([test "x$with_gnutls" != xcheck],
 		AC_MSG_FAILURE([--with-gnutls was given but GnuTLS not found])
-	))], [AM_CONDITIONAL([HAVE_GNUTLS], [false])])
+	))])
 
+AM_CONDITIONAL([HAVE_OPENSSL], [false])
 AS_IF([test "x$with_openssl" != xno],
-	[PKG_CHECK_MODULES([OPENSSL], [openssl >= 0.9.8],
-        [AM_CONDITIONAL([HAVE_OPENSSL], [true])]
+	[PKG_CHECK_MODULES([OPENSSL], [openssl >= 1.1.0],
+	[AM_CONDITIONAL([HAVE_OPENSSL], [true])]
 	[AC_DEFINE([HAVE_OPENSSL], [1], [OpenSSL Support])]
 	[HAVE_CRYPTO=true],
-        AS_IF([test "x$with_openssl" != xcheck],
+	AS_IF([test "x$with_openssl" != xcheck],
 		AC_MSG_FAILURE([--with-openssl was given but OpenSSL not found])
-	))], [AM_CONDITIONAL([HAVE_OPENSSL], [false])])
+	))])
 
 AS_IF([test -z "$HAVE_CRYPTO"],
 	[AC_MSG_ERROR([no crypto library detected], [1])], [])
